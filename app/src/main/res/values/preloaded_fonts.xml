@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/</item>
+        <item>@font/abhaya_libre</item>
+        <item>@font/amethysta</item>
+        <item>@font/amiri</item>
+        <item>@font/averia_serif_libre_bold</item>
+        <item>@font/baloo</item>
+        <item>@font/basic</item>
+        <item>@font/carter_one</item>
+        <item>@font/headland_one</item>
+        <item>@font/pt_serif_caption</item>
+        <item>@font/spicy_rice</item>
+    </array>
+</resources>
