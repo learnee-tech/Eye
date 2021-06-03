@@ -28,6 +28,7 @@ import com.example.eye.modules.User;
 //import com.google.firebase.firestore.auth.User;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.InstallationTokenResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,19 +59,16 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
         findViewById(R.id.textSignOut).setOnClickListener(view -> signOut());
 
 
-        FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(new OnCompleteListener<InstallationTokenResult>() {
-            @Override
-            public void onComplete(@NonNull Task<InstallationTokenResult> task) {
-                if (task.isSuccessful() && task.getResult() != null) {
-                    sendFCMTokenToDatabase(task.getResult().getToken());
-                }
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if(task.isSuccessful() && task.getResult() != null){
+                sendFCMTokenToDatabase(task.getResult());
             }
         });
 
         RecyclerView userRecyclerView = findViewById(R.id.userRecyclerView);
         textErrorMessage = findViewById(R.id.textErrorMessage);
         //usersProgressBar = findViewById(R.id.userProgressBar);
-         users = new ArrayList<User>();
+         users = new ArrayList<>();
         userAdapter = new UserAdapter(users, this);
         userRecyclerView.setAdapter(userAdapter);
 
@@ -135,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
             updates.put(Constants.KEY_FCM_TOKEN, FieldValue.delete());
             documentReference.update(updates)
                     .addOnSuccessListener(aVoid -> {
-                        preferenceManager.clearPreference();;
+                        preferenceManager.clearPreference();
                         startActivity(new Intent(getApplicationContext(), SignInActivity.class));
                     })
                     .addOnFailureListener(e -> Toast.makeText(MainActivity.this, "Unable to sign out!!!!", Toast.LENGTH_SHORT).show());
