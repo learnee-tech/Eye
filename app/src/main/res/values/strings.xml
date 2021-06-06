@@ -18,6 +18,6 @@
     <string name="incoming_request">Incoming Request</string>
     <string name="accept">Accept</string>
     <string name="reject">Reject</string>
-    <string name="outgoing_request">Outgoing Request</string>
+    <string name="outgoing_request">Sending Request</string>
     <string name="cancel">Cancel</string>
 </resources>

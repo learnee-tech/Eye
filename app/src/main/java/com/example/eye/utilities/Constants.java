@@ -41,8 +41,7 @@ public class Constants {
                 Constants.REMOTE_MSG_AUTHORIZATION,
                 "key = AAAA5Lr6XgE:APA91bEDHZTbVhSPBu6428iQN1cJYamUjmaS1bqoQbGNPq1pi88MhutUnjZd28lu9vtu53U1Xj4ZxadNM6T-c215iYbR1jRW-eO8KpxZN5Tx8XeGGDEfIwjrMnixn5wt3TLGqWq2e-KZ"
         );
-        headers.put(
-                Constants.REMOTE_MSG_CONTENT_TYPE,"application/json");
+        headers.put(Constants.REMOTE_MSG_CONTENT_TYPE,"application/json");
         return headers;
     }
 }

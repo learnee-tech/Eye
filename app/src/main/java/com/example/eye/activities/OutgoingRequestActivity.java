@@ -1,19 +1,18 @@
 package com.example.eye.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-//import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.eye.R;
 import com.example.eye.modules.User;
@@ -21,9 +20,6 @@ import com.example.eye.network.ApiClient;
 import com.example.eye.network.ApiServices;
 import com.example.eye.utilities.Constants;
 import com.example.eye.utilities.PreferenceManager;
-/*import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.FirebaseFirestore;*/
 import com.google.firebase.installations.FirebaseInstallations;
 
 import org.jitsi.meet.sdk.JitsiMeetActivity;
@@ -37,6 +33,11 @@ import java.util.UUID;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+//import android.view.View;
+/*import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;*/
 
 public class OutgoingRequestActivity extends AppCompatActivity {
 
@@ -68,7 +69,7 @@ public class OutgoingRequestActivity extends AppCompatActivity {
         if(user != null){
             textUsername.setText(String.format("%s %s",user.firstName,user.lastName));
         }
-        Button   buttonCancel = findViewById(R.id.buttonCancel);
+        Button  buttonCancel = findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(view -> {
             if(user != null){
                 cancelInvitation(user.token);
@@ -100,31 +101,33 @@ public class OutgoingRequestActivity extends AppCompatActivity {
                                                 // with this pass the custom data
             data.put(Constants.REMOTE_MSG_TYPE, Constants.REMOTE_MSG_INVITATION);
             data.put(Constants.REMOTE_MSG_MEETING_TYPE, meetingType);
-            data.put(Constants.KEY_FIRST_NAME, preferenceManager.getString(Constants.KEY_USER_ID));
+            data.put(Constants.KEY_FIRST_NAME, preferenceManager.getString(Constants.KEY_FIRST_NAME));
             data.put(Constants.KEY_LAST_NAME, preferenceManager.getString(Constants.KEY_LAST_NAME));
             data.put(Constants.KEY_EMAIL, preferenceManager.getString(Constants.KEY_EMAIL));
             data.put(Constants.REMOTE_MSG_INVITER_TOKEN, inviterToken);     // to send response if receiver accept or reject
 
 
-            preview =
-                    preferenceManager.getString(Constants.KEY_USER_ID)  + "_" +
+            preview = preferenceManager.getString(Constants.KEY_USER_ID)  + "_" +
                             UUID.randomUUID().toString().substring(0, 5);
+
             data.put(Constants.REMOTE_MSG_PREVIEW, preview);
+
             body.put(Constants.REMOTE_MSG_DATA, data);
             body.put(Constants.REMOTE_MSG_REGISTRATION_IDS, tokens);
                                 //call sendremotemessage method
+
             sendRemoteMessage(body.toString(), Constants.REMOTE_MSG_INVITATION);
 
         } catch(Exception exception){
-            Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,exception.getMessage(), Toast.LENGTH_SHORT).show();
             finish();
         }
     }
     //method to send remote message
     private void sendRemoteMessage(String remoteMessageBody, String type){
-        ApiClient.getClient().create(ApiServices.class).sendRemoteMessage(
+        ApiClient.getClient().create(ApiServices.class).sendRemoteMessage(      //lets call this method from apiservice interface
                 Constants.getRemoteMessageHeaders(), remoteMessageBody
-        ).enqueue(new Callback<String>() {                      //to able the response of the api
+        ).enqueue(new Callback<String>() {                      //to able the response of the api//Asynchronously send the request and notify callback of its response or if an error occurred talking to the server, creating the request, or processing the response.
             @Override
             public void onResponse(@NonNull Call<String> call,@NonNull Response<String> response) {
                 if(response.isSuccessful()){
@@ -132,6 +135,7 @@ public class OutgoingRequestActivity extends AppCompatActivity {
                         Toast.makeText(OutgoingRequestActivity.this, "request send successfully", Toast.LENGTH_SHORT).show();
                     }else if(type.equals(Constants.REMOTE_MSG_INVITATION_RESPONSE)){
                         Toast.makeText(OutgoingRequestActivity.this, "Request Cancelled", Toast.LENGTH_SHORT).show();
+                        //startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         finish();
                     }
                 }else{
@@ -196,6 +200,7 @@ public class OutgoingRequestActivity extends AppCompatActivity {
                     // Toast.makeText(context, "Request Accepted", Toast.LENGTH_SHORT).show();
                 } else if(type.equals(Constants.REMOTE_MSG_INVITATION_REJECTED)){
                     Toast.makeText(context, "Request Rejected", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     finish();
                 }
             }

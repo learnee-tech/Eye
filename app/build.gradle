@@ -63,7 +63,7 @@ dependencies {
      implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01'
     //firebase
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
-    implementation 'com.google.firebase:firebase-firestore:23.0.0'
+    implementation 'com.google.firebase:firebase-firestore:23.0.1'
 
 
     //jitsi api

@@ -10,11 +10,11 @@ public class ApiClient {
         exposed for communication by any system or service provider.*/
 
     private static Retrofit retrofit = null;    //instance od retrofit
-            public static Retrofit getClient(){
-                if(retrofit == null){
+            public static Retrofit getClient(){             //to get retrofit object in any class
+                if(retrofit == null){                           // create only once whenever not present.
                     retrofit = new Retrofit.Builder()
                             .baseUrl("https://fcm.googleapis.com/fcm/")
-                            .addConverterFactory(ScalarsConverterFactory.create())
+                            .addConverterFactory(ScalarsConverterFactory.create())      //we get response from server in json form
                             .build();
                 }
                 return retrofit;

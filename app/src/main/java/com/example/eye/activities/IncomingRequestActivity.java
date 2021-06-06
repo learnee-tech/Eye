@@ -1,20 +1,18 @@
 package com.example.eye.activities;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.eye.R;
 import com.example.eye.network.ApiClient;
@@ -26,7 +24,6 @@ import org.jitsi.meet.sdk.JitsiMeetConferenceOptions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URI;
 import java.net.URL;
 
 import retrofit2.Call;
@@ -138,13 +135,15 @@ public class IncomingRequestActivity extends AppCompatActivity {
             }
         });
     }
-    private BroadcastReceiver invitationResponseReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver invitationResponseReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String type = intent.getStringExtra(Constants.REMOTE_MSG_INVITATION_RESPONSE);
             if(type != null){
                 if(type.equals(Constants.REMOTE_MSG_INVITATION_CANCELLED)){
                     Toast.makeText(context, "Request Cancelled", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
                 }
             }
         }

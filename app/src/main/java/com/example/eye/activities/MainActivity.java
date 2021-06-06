@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.view.View.INVISIBLE;
+
 public class MainActivity extends AppCompatActivity implements UsersListener {
         private PreferenceManager preferenceManager;
         private List<User> users;
@@ -59,9 +61,16 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
         findViewById(R.id.textSignOut).setOnClickListener(view -> signOut());
 
 
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+        /*FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if(task.isSuccessful() && task.getResult() != null){
                 sendFCMTokenToDatabase(task.getResult());
+            }
+        });*/
+        FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(task -> {
+            if(task.isSuccessful() && task.getResult() != null){
+                sendFCMTokenToDatabase(task.getResult().getToken());
+
+
             }
         });
 
@@ -80,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
 
     private void getUsers(){
         swipeRefreshLayout.setRefreshing(true);
+        textErrorMessage.setVisibility(INVISIBLE);
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         database.collection(Constants.KEY_COLLECTION_USERS)
                 .get()
@@ -89,7 +99,7 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
                     if(task.isSuccessful() && task.getResult() != null){
                         users.clear();
                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()){
-                            if(myUserId.equals(documentSnapshot.getId())){
+                            if(myUserId.equals(documentSnapshot.getId()) || (documentSnapshot.getString(Constants.KEY_FCM_TOKEN) == null)){
                                 continue;
                             }
                             User user = new User();
@@ -102,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
                         if(users.size()> 0){
                             userAdapter.notifyDataSetChanged();
                         }else {
+                            users.clear();
+                            userAdapter.notifyDataSetChanged();
                             textErrorMessage.setText(String.format("%s","No client available"));
                             textErrorMessage.setVisibility(View.VISIBLE);
                         }
