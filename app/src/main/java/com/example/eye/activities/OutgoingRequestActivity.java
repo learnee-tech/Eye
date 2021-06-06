@@ -20,8 +20,9 @@ import com.example.eye.network.ApiClient;
 import com.example.eye.network.ApiServices;
 import com.example.eye.utilities.Constants;
 import com.example.eye.utilities.PreferenceManager;
+//import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.FirebaseInstallations;
-
+import com.google.firebase.messaging.FirebaseMessaging;
 import org.jitsi.meet.sdk.JitsiMeetActivity;
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions;
 import org.json.JSONArray;
@@ -77,7 +78,7 @@ public class OutgoingRequestActivity extends AppCompatActivity {
         });
 
 
-        FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(task -> {
+      /*  FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(task -> {
             if(task.isSuccessful() && task.getResult() != null){
                 inviterToken = task.getResult().getToken();
                 if(meetingType != null && user != null){
@@ -85,6 +86,13 @@ public class OutgoingRequestActivity extends AppCompatActivity {
                 }
 
 
+            }
+        });*/ FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+            if(task.isSuccessful() && task.getResult() != null){
+                inviterToken= (task.getResult());
+                if(meetingType != null && user != null){
+                    initiateMeeting(meetingType, user.token);
+                }
             }
         });
 
@@ -175,7 +183,7 @@ public class OutgoingRequestActivity extends AppCompatActivity {
         }
     }
 
-    private BroadcastReceiver invitationResponseReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver invitationResponseReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String type = intent.getStringExtra(Constants.REMOTE_MSG_INVITATION_RESPONSE);

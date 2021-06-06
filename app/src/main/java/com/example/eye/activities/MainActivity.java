@@ -61,18 +61,18 @@ public class MainActivity extends AppCompatActivity implements UsersListener {
         findViewById(R.id.textSignOut).setOnClickListener(view -> signOut());
 
 
-        /*FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if(task.isSuccessful() && task.getResult() != null){
                 sendFCMTokenToDatabase(task.getResult());
             }
-        });*/
-        FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(task -> {
+        });
+        /*FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(task -> {
             if(task.isSuccessful() && task.getResult() != null){
                 sendFCMTokenToDatabase(task.getResult().getToken());
 
 
             }
-        });
+        });*/
 
         RecyclerView userRecyclerView = findViewById(R.id.userRecyclerView);
         textErrorMessage = findViewById(R.id.textErrorMessage);
