@@ -58,7 +58,7 @@
         android:text="@string/cancel"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:backgroundTint="#C51162"
+        app:backgroundTint="#1144C5"
         app:iconTint="#FFFFFF"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

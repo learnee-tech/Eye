@@ -58,13 +58,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.UserViewHolder
                 public UserViewHolder(@NonNull View itemView) {         //create view for input
                         super(itemView);
                        textUsername  = itemView.findViewById(R.id.textUsername);
-                       textEmail = itemView.findViewById(R.id.textEmail);
+                       //textEmail = itemView.findViewById(R.id.textEmail);
                        imageVideoMeeting= itemView.findViewById(R.id.imageVideoMeeting);
                 }
                 void setUserData(com.example.eye.modules.User user)                 //put data into view
                 {
                         textUsername.setText(String.format("%s %s", user.firstName, user.lastName));
-                        textEmail.setText(user.email);
+                      //  textEmail.setText(user.email);
                         imageVideoMeeting.setOnClickListener(new View.OnClickListener(){
                             @Override
                             public void onClick(View view) {

@@ -27,7 +27,6 @@
         android:layout_width="0dp"
         android:layout_height="1dp"
         android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginLeft="@dimen/_8sdp"
         android:layout_marginTop="@dimen/_4sdp"
         android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -53,7 +52,7 @@
     <TextView
         android:id="@+id/textUsername"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginStart="@dimen/_8sdp"
         android:layout_marginEnd="@dimen/_8sdp"
         android:layout_marginBottom="16dp"
@@ -62,28 +61,14 @@
         android:maxLines="1"
         android:textColor="@color/black"
         android:textSize="@dimen/_15sdp"
-        app:layout_constraintTop_toBottomOf="@id/textEmail"
+        app:layout_constraintBottom_toBottomOf="@+id/viewDivider"
         app:layout_constraintBottom_toTopOf="@+id/viewSupporter"
         app:layout_constraintEnd_toStartOf="@id/imageVideoMeeting"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@id/icon" />
 
-    <TextView
-        android:id="@+id/textEmail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_8sdp"
-        android:layout_marginEnd="@dimen/_8sdp"
-        android:layout_marginBottom="28dp"
-        android:ellipsize="end"
-        android:fontFamily="sans-serif-condensed-medium"
-        android:maxLines="1"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_15sdp"
-        app:layout_constraintBottom_toTopOf="@+id/textUsername"
-        app:layout_constraintEnd_toStartOf="@id/imageVideoMeeting"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/icon" />
+
+
 
 
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -35,12 +36,12 @@ public class IncomingRequestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_incoming_request_activity);//Whenever you want to change the current look of an// Activity or when you move from one Activity to another, the new Activity must have a design to show. We call setContentView in onCreate with the desired design as argument
+       // setContentView(R.layout.activity_incoming_request_activity);//Whenever you want to change the current look of an// Activity or when you move from one Activity to another, the new Activity must have a design to show. We call setContentView in onCreate with the desired design as argument
         //here we get data from intent declared in messaging service.
-        ImageView imageMeetingType = findViewById(R.id.imageMeetingType);
-        String meetingType = getIntent().getStringExtra(Constants.REMOTE_MSG_MEETING_TYPE);
+       // ImageView imageMeetingType = findViewById(R.id.imageMeetingType);
+       // String meetingType = getIntent().getStringExtra(Constants.REMOTE_MSG_MEETING_TYPE);
 
-        if(meetingType != null){
+      /*  if(meetingType != null){
             if(meetingType.equals("video")){
                 imageMeetingType.setImageResource(R.drawable.ic_video);
             }
@@ -52,21 +53,46 @@ public class IncomingRequestActivity extends AppCompatActivity {
                 "%s %s",
                 firstname,
                 getIntent().getStringExtra(Constants.KEY_LAST_NAME)
-        ));
+        ));*/
 
-        Button buttonAccept = findViewById(R.id.buttonAccept);
-        buttonAccept.setOnClickListener(view -> sendInvitationResponse(
-                Constants.REMOTE_MSG_INVITATION_ACCEPTED,
-                getIntent().getStringExtra(Constants.REMOTE_MSG_INVITER_TOKEN)
-        ));
+        //Button buttonAccept = findViewById(R.id.buttonAccept);
+       /* buttonAccept.setOnClickListener((View view) -> {
+            sendInvitationResponse(
+                    Constants.REMOTE_MSG_INVITATION_ACCEPTED,
+                    getIntent().getStringExtra(Constants.REMOTE_MSG_INVITER_TOKEN)
+            );
+        });
 
         Button buttonReject = findViewById(R.id.buttonReject);
         buttonReject.setOnClickListener(view -> sendInvitationResponse(
                 Constants.REMOTE_MSG_INVITATION_REJECTED,
                 getIntent().getStringExtra(Constants.REMOTE_MSG_INVITER_TOKEN)
-        ));
+        ));*/
+
+
+
+        sendInvitationResponse(
+                    Constants.REMOTE_MSG_INVITATION_ACCEPTED,
+                    getIntent().getStringExtra(Constants.REMOTE_MSG_INVITER_TOKEN)
+            );
+
+
+
 
     }
+    private final BroadcastReceiver invitationResponseReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String type = intent.getStringExtra(Constants.REMOTE_MSG_INVITATION_RESPONSE);
+            if(type != null){
+                if(type.equals(Constants.REMOTE_MSG_INVITATION_CANCELLED)){
+                    Toast.makeText(context, "Request Cancelled", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+
+                }
+            }
+        }
+    };
             private void sendInvitationResponse(String type, String receiverToken){
         try {
 
@@ -91,6 +117,7 @@ public class IncomingRequestActivity extends AppCompatActivity {
 
 
 
+
     private void sendRemoteMessage(String remoteMessageBody, String type){
         ApiClient.getClient().create(ApiServices.class).sendRemoteMessage(
                 Constants.getRemoteMessageHeaders(), remoteMessageBody
@@ -105,9 +132,26 @@ public class IncomingRequestActivity extends AppCompatActivity {
                                     new JitsiMeetConferenceOptions.Builder()
                                     .setServerURL(serverURL)
                                     .setWelcomePageEnabled(false)
-                                    .setRoom(getIntent().getStringExtra(Constants.REMOTE_MSG_PREVIEW))
                                             .setVideoMuted(false)
                                     .setAudioMuted(true)
+                                            .setFeatureFlag("add-people.enabled", false)
+                                            .setFeatureFlag("chat.enabled", false)
+                                            .setFeatureFlag("live-streaming.enabled", false)
+                                            .setFeatureFlag("meeting-name.enabled", false)
+                                            .setFeatureFlag("meeting-password.enabled", false)
+                                            // .setFeatureFlag("recording.enabled", false)
+                                            .setFeatureFlag("invite.enabled", false)
+                                            .setFeatureFlag("notification.enabled",false)
+                                            .setFeatureFlag("raise-hand.enabled",false)
+                                            .setFeatureFlag("overflow-menu.enabled",false)
+                                            .setFeatureFlag("filmstrip.enabled",false)
+                                            .setFeatureFlag("video-share.enabled",false)
+                                            .setFeatureFlag("close-captions.enabled",false)
+                                            .setFeatureFlag("conference-timer.enabled",false)
+                                            .setFeatureFlag("calendar.enabled",false)
+                                            .setFeatureFlag("call-integration.enabled",false)
+                                            .setFeatureFlag("audio-mute.enabled",false)
+                                            .setRoom(getIntent().getStringExtra(Constants.REMOTE_MSG_PREVIEW))
                                     .build();
                             JitsiMeetActivity.launch(IncomingRequestActivity.this,conferenceOptions);
                             finish();
@@ -135,19 +179,7 @@ public class IncomingRequestActivity extends AppCompatActivity {
             }
         });
     }
-    private final BroadcastReceiver invitationResponseReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String type = intent.getStringExtra(Constants.REMOTE_MSG_INVITATION_RESPONSE);
-            if(type != null){
-                if(type.equals(Constants.REMOTE_MSG_INVITATION_CANCELLED)){
-                    Toast.makeText(context, "Request Cancelled", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
 
-                }
-            }
-        }
-    };
 
     @Override
     protected void onStart() {

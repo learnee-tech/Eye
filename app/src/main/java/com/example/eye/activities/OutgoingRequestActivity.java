@@ -140,6 +140,39 @@ public class OutgoingRequestActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<String> call,@NonNull Response<String> response) {
                 if(response.isSuccessful()){
                     if(type.equals(Constants.REMOTE_MSG_INVITATION)) {
+                        try {
+                            URL serverURL = new URL("https://meet.jit.si");
+                            JitsiMeetConferenceOptions conferenceOptions =
+                                    new JitsiMeetConferenceOptions.Builder()
+                                            .setServerURL(serverURL)
+                                            .setWelcomePageEnabled(false)
+                                            .setRoom(preview)
+                                            .setVideoMuted(true)
+                                            .setAudioMuted(true)
+                                            .setFeatureFlag("add-people.enabled", false)
+                                            .setFeatureFlag("chat.enabled", false)
+                                            .setFeatureFlag("live-streaming.enabled", false)
+                                            .setFeatureFlag("meeting-name.enabled", false)
+                                            .setFeatureFlag("meeting-password.enabled", false)
+                                            // .setFeatureFlag("recording.enabled", false)
+                                            .setFeatureFlag("invite.enabled", false)
+                                            .setFeatureFlag("notification.enabled",false)
+                                            .setFeatureFlag("raise-hand.enabled",false)
+                                            .setFeatureFlag("overflow-menu.enabled",false)
+                                            .setFeatureFlag("filmstrip.enabled",false)
+                                            .setFeatureFlag("video-share.enabled",false)
+                                            .setFeatureFlag("close-captions.enabled",false)
+                                            .setFeatureFlag("conference-timer.enabled",false)
+                                            .setFeatureFlag("calendar.enabled",false)
+                                            .setFeatureFlag("call-integration.enabled",false)
+                                            .setFeatureFlag("audio-mute.enabled",false)
+                                            .build();
+                            JitsiMeetActivity.launch(OutgoingRequestActivity.this,conferenceOptions);
+                            finish();
+                        }catch(Exception exception){
+                            Toast.makeText(OutgoingRequestActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
                         Toast.makeText(OutgoingRequestActivity.this, "request send successfully", Toast.LENGTH_SHORT).show();
                     }else if(type.equals(Constants.REMOTE_MSG_INVITATION_RESPONSE)){
                         Toast.makeText(OutgoingRequestActivity.this, "Request Cancelled", Toast.LENGTH_SHORT).show();
@@ -189,23 +222,8 @@ public class OutgoingRequestActivity extends AppCompatActivity {
             String type = intent.getStringExtra(Constants.REMOTE_MSG_INVITATION_RESPONSE);
             if(type != null){
                 if(type.equals(Constants.REMOTE_MSG_INVITATION_ACCEPTED)){
-                    try {
-                        URL serverURL = new URL("https://meet.jit.si");
-                        JitsiMeetConferenceOptions conferenceOptions =
-                                new JitsiMeetConferenceOptions.Builder()
-                                        .setServerURL(serverURL)
-                                        .setWelcomePageEnabled(false)
-                                        .setRoom(preview)
-                                        .setVideoMuted(false)
-                                        .setAudioMuted(true)
-                                        .build();
-                        JitsiMeetActivity.launch(OutgoingRequestActivity.this,conferenceOptions);
-                        finish();
-                    }catch(Exception exception){
-                        Toast.makeText(OutgoingRequestActivity.this, exception.getMessage(), Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                    // Toast.makeText(context, "Request Accepted", Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(context, "Request Accepted", Toast.LENGTH_SHORT).show();
                 } else if(type.equals(Constants.REMOTE_MSG_INVITATION_REJECTED)){
                     Toast.makeText(context, "Request Rejected", Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
