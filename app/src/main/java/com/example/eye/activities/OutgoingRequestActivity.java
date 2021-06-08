@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,12 +24,17 @@ import com.example.eye.utilities.PreferenceManager;
 //import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.installations.FirebaseInstallations;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.jitsi.meet.sdk.JitsiMeetActivity;
 import org.jitsi.meet.sdk.JitsiMeetConferenceOptions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import retrofit2.Call;
@@ -46,6 +52,11 @@ public class OutgoingRequestActivity extends AppCompatActivity {
             private PreferenceManager preferenceManager;            //define
             private String inviterToken = null;                 //token of sender
             String preview = null;
+            private TextView textUsername;
+
+            private int rejectionCount = 0;
+            private int totalReceivers = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +68,7 @@ public class OutgoingRequestActivity extends AppCompatActivity {
 
 
         ImageView imageMeetingType = findViewById(R.id.imageMeetingType);
-        TextView textUsername  = findViewById(R.id.textUsername);
+        textUsername  = findViewById(R.id.textUsername);
         String meetingType = getIntent().getStringExtra("type");
 
 
@@ -72,10 +83,18 @@ public class OutgoingRequestActivity extends AppCompatActivity {
         }
         Button  buttonCancel = findViewById(R.id.buttonCancel);
         buttonCancel.setOnClickListener(view -> {
-            if(user != null){
-                cancelInvitation(user.token);
+            if(getIntent().getBooleanExtra("isMultiple",false)) {
+                Type type = new TypeToken<ArrayList<User>>(){
+                }.getType();
+                ArrayList<User> receivers = new Gson().fromJson(getIntent().getStringExtra("selectUsers"), type);
+                cancelInvitation(null, receivers);
+            }else{
+                if (user != null) {
+                    cancelInvitation(user.token, null);
+                }
             }
-        });
+
+            });
 
 
       /*  FirebaseInstallations.getInstance().getToken(true).addOnCompleteListener(task -> {
@@ -90,20 +109,50 @@ public class OutgoingRequestActivity extends AppCompatActivity {
         });*/ FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
             if(task.isSuccessful() && task.getResult() != null){
                 inviterToken= (task.getResult());
-                if(meetingType != null && user != null){
-                    initiateMeeting(meetingType, user.token);
+
+                if(meetingType != null){
+                    if(getIntent().getBooleanExtra("isMultiple",true)){
+                        Type type = new TypeToken<ArrayList<User>>(){}.getType();
+                        ArrayList<User> receivers;
+                        receivers = new Gson().fromJson(getIntent().getStringExtra("selectedUsers"),
+                                type);
+                        if (receivers != null){
+                           totalReceivers = receivers.size();
+                       }
+
+                        initiateMeeting(meetingType,null, receivers);
+                    }else{
+                        if( user != null){
+                            totalReceivers = 1;
+                            initiateMeeting(meetingType, user.token, null);
+                        }
+                    }
                 }
+
             }
         });
 
     }
 
 
-    private void initiateMeeting(String meetingType, String receiverToken){
-        try{
+    private void initiateMeeting(String meetingType, String receiverToken, ArrayList<User> receivers){
+        try{                                                                    //body for API request
             JSONArray tokens =  new JSONArray();
-            tokens.put(receiverToken);
-                                                       //body for API request
+
+            if(receiverToken != null ){
+                tokens.put(receiverToken);
+            }
+
+
+            if(receivers != null && receivers.size() > 0){
+                StringBuilder userNames =  new StringBuilder();
+                for (int i = 0; i<receivers.size(); i++){
+                    tokens.put(receivers.get(i).token);
+                    userNames.append(receivers.get(i).firstName).append(" ").append(receivers.get(i).lastName).append("\n");
+                }
+
+                textUsername.setText(userNames.toString());
+            }
             JSONObject body = new JSONObject();
             JSONObject data = new JSONObject();
                                                 // with this pass the custom data
@@ -194,11 +243,22 @@ public class OutgoingRequestActivity extends AppCompatActivity {
     }
 
 
-    private void cancelInvitation(String receiverToken){
+    private void cancelInvitation(String receiverToken, ArrayList<User> receivers){
         try {
 
             JSONArray tokens =new JSONArray();
+
+            if(receiverToken != null){
+                tokens.put(receiverToken);
+            }
+
             tokens.put(receiverToken);
+
+            if(receivers != null && receivers.size() > 0){
+                for (User user : receivers){
+                    tokens.put(user.token);
+                }
+            }
 
             JSONObject body = new JSONObject();
             JSONObject data = new JSONObject();
@@ -225,9 +285,13 @@ public class OutgoingRequestActivity extends AppCompatActivity {
 
                     Toast.makeText(context, "Request Accepted", Toast.LENGTH_SHORT).show();
                 } else if(type.equals(Constants.REMOTE_MSG_INVITATION_REJECTED)){
-                    Toast.makeText(context, "Request Rejected", Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                    finish();
+                    rejectionCount += 1;
+                    if (rejectionCount == totalReceivers){
+                        Toast.makeText(context, "Request Rejected", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        finish();
+                    }
+
                 }
             }
         }
